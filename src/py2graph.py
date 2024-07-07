@@ -52,12 +52,13 @@ if __name__ == "__main__":
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
-    if args.project is None:
-        if config.get("PROJECT_PATH") is None:
-            raise Exception("Project path is not specified.")
-        args.project = config["PROJECT_PATH"]
-    root = format_path(args.project)
-    logger().info(f"Initializing project at: {root}")
+    if args.build:
+        if args.project is None:
+            if config.get("PROJECT_PATH") is None:
+                raise Exception("Project path is not specified.")
+            args.project = config["PROJECT_PATH"]
+        root = format_path(args.project)
+        logger().info(f"Initializing project at: {root}")
 
     logger().info("Connecting to cache provider...")
     resolve_cache(config["CACHE"])
@@ -70,8 +71,6 @@ if __name__ == "__main__":
 
     ############################################################
     # Following are actual works.
-    input_file_task = get_all_files_task(root)
-
     if args.force:
         if args.diff is not None:
             logger().warning("Diff file is specified, force flag will be ignored.")
@@ -81,18 +80,20 @@ if __name__ == "__main__":
             client.init()
             logger().info("Purging cache...")
             cache.clear()
-    if args.diff != None:
-        logger().info("Loading diff file...")
-        diff = CommitDiff.load(args.diff)
-        if diff is None:
-            raise Exception("Diff file is not supported.")
-        logger().info("Applying diff...")
-        affected_files = apply_diff(client, diff)
-        print("Affected files: ", affected_files)
-        if affected_files != None:
-            input_file_task = get_specified_files_task(root, affected_files)
 
     if args.build:
+        input_file_task = get_all_files_task(root)
+        if args.diff != None:
+            logger().info("Loading diff file...")
+            diff = CommitDiff.load(args.diff)
+            if diff is None:
+                raise Exception("Diff file is not supported.")
+            logger().info("Applying diff...")
+            affected_files = apply_diff(client, diff)
+            print("Affected files: ", affected_files)
+            if affected_files != None:
+                input_file_task = get_specified_files_task(root, affected_files)
+
         cfg_thread = (
             get_cfg_frontend_descriptor(
                 root,
