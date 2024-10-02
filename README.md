@@ -20,8 +20,8 @@ CACHE:
 ```
 
 - For `BACKEND`, you can choose `DATABASE` from `gremlin` and `filedb`. And fill in the corresponding connection string.
-- For `CACHE`, you can choose `DATABASE` from `memory` and `redis`. And fill in the corresponding redis connection information. If you use Redis, you should fill the `REDIS` section, set `PASSWORD` to `null` if you don't have a password.
+- For `CACHE`, you can choose `DATABASE` from `memory` and `redis`. And fill in the corresponding `redis` connection information. If you use `redis`, you should fill the `REDIS` section, set `PASSWORD` to `null` if you don't have a password.
 
-### 2.2 Build Graph
+### Build Graph
 
 See help for `build.sh`, or you can directly run `src/py2graph.py` to get more options. For detailed usage, see both files respectively.
